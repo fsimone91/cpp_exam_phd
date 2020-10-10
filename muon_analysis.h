@@ -26,15 +26,16 @@ public:
     {}
 
     double mass();
-    double px() { return (pt * cos(phi )); }
-    double py() { return (pt * sin(phi )); }
-    double pz() { return (pt * sinh(eta)); }
+    double px() const { return (pt * cos(phi )); }
+    double py() const { return (pt * sin(phi )); }
+    double pz() const { return (pt * sinh(eta)); }
     void print();
 
-    // Overload + operator to add tracks.
-    Muon operator+(Muon);
-    // Overload == operator to compare tracks.
-    bool operator==(const Muon t);
+    // Overload += operator to sum up tracks.
+    Muon& operator+=(const Muon& rmuon);
+
+    //helper function to support class Muon
+    bool isEqual(const Muon&, const Muon&);
 
 private:
     double pt {0};
@@ -63,6 +64,9 @@ private:
     int run {0};
 };
 
+//constant declaration and initialization outside class
+const double mass_low = 1.75, mass_high = 1.90;
+const double chi2_low = 0.0, chi2_high = 50.0;
 
 class EventCandidate
 {

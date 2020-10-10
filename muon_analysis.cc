@@ -6,11 +6,6 @@
 #include <math.h>
 #include "muon_analysis.h"
 
-#define MASS_LOW   1.75
-#define MASS_HIGH  1.80
-#define CHI2_LOW   0.00
-#define CHI2_HIGH 50.00
-
 //CSV_READER
 int csv_reader::open(const std::string &file_name)
 {
@@ -57,22 +52,26 @@ void Muon::print(){
     std::cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << ", energy " <<en << std::endl;
 }
 
-Muon Muon::operator+(Muon t) {
+Muon& Muon::operator+=(const Muon& rmuon) {
    //sum 3-momentum components
-   double px_tot = px() + t.px();
-   double py_tot = py() + t.py();
-   double pz_tot = pz() + t.pz();
+   double px_tot = px() + rmuon.px();
+   double py_tot = py() + rmuon.py();
+   double pz_tot = pz() + rmuon.pz();
    //convert rapresentation from (px,py,pz) to (pt, eta, phi)
    double pt_tot = sqrt( pow(px_tot,2.0) + pow(py_tot,2.0) );
    double theta = atan2(pt_tot,pz_tot);
    double eta_tot = -log(tan(theta/2));
    double phi_tot = atan2(py_tot,px_tot);
 
-   return Muon(pt_tot, eta_tot, phi_tot, t.en+en);
+   this->pt = pt_tot;
+   this->eta = eta_tot;
+   this->phi = phi_tot;
+   this->en = rmuon.en+en;
+   return *this;
 }
 
-bool Muon::operator==(const Muon t) {
-   if (t.pt == this->pt && t.eta == this->eta && t.phi == this->phi && t.en == this->en)
+bool Muon::isEqual(const Muon& m1, const Muon& m2) {
+   if (m1.pt == m2.pt && m1.eta == m2.eta && m1.phi == m2.phi && m1.en == m2.en)
        return true;
    else return false;
 }
@@ -81,8 +80,8 @@ bool Muon::operator==(const Muon t) {
 //EVENTCANDIDATE
 bool EventCandidate::isGoodEvent() {
     double m = candidate.mass();
-    if(m < MASS_HIGH && m > MASS_LOW){
-        if(chi2 < CHI2_HIGH && chi2 > CHI2_LOW){
+    if(m < mass_high && m > mass_low){
+        if(chi2 < chi2_high && chi2 > chi2_low){
             return true;
         }
         else return false;
@@ -103,7 +102,7 @@ EventCandidate EventCandidate::analyseRow(std::vector<std::string> row) {
         muen  = std::stod(row.at(i+3));
 
         Muon mu(mupt, mueta, muphi, muen);
-        incandidate = incandidate + mu; //operator+ overloaded in class Muon sums up the muon momenta and energies
+        incandidate += mu; //operator += overloaded in class Muon sums up the muon momenta and energies
     }
     //File-specific!! //take event info from row
     Event inevt(std::stod(row.at(0)),  std::stod(row.at(1)), std::stod(row.at(2)));
