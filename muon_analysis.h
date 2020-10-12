@@ -45,8 +45,7 @@ public:
     // Overload += operator to sum up tracks.
     Muon& operator+=(const Muon& rmuon);
 
-    // Overload == operator to compare
-    bool operator==(const Muon& m);
+    bool isEqual(const Muon& m);
 
 private:
     double pt_ {0};

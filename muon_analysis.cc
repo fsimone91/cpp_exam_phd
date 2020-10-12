@@ -70,7 +70,7 @@ Muon& Muon::operator+=(const Muon& rmuon) {
    return *this;
 }
 
-bool Muon::operator==(const Muon& m) {
+bool Muon::isEqual(const Muon& m) {
    return ((this->pt_ == m.pt()) && (this->eta_ == m.eta()) && (this->phi_ == m.phi()) && (this->en_ == m.en()));
 }
 
@@ -83,7 +83,7 @@ Muon operator+(const Muon& m1, const Muon& m2) {
 
 bool operator==(const Muon& m1, const Muon& m2) {
     Muon temp{m1}; //using copy constructor
-    return (temp==m2);
+    return (temp.isEqual(m2));
 }
 
 //EVENTCANDIDATE
