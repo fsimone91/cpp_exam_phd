@@ -43,13 +43,13 @@ std::vector<std::string> csv_reader::read_row(){
 
 //MUON
 double Muon::mass(){
-    double P = pt * cosh(eta); //momentum
-    double M2 = pow(en,2.0) - pow(P,2.0); //4-vector magnitude
+    double P = pt_ * cosh(eta_); //momentum
+    double M2 = pow(en_,2.0) - pow(P,2.0); //4-vector magnitude
     return M2 < 0.0 ? -sqrt(-M2) : sqrt(M2);
 }
 
 void Muon::print(){
-    std::cout << "pt = " << pt << ", eta = " << eta << ", phi = " << phi << ", energy " <<en << std::endl;
+    std::cout << "pt = " << pt_ << ", eta = " << eta_ << ", phi = " << phi_ << ", energy " <<en_ << std::endl;
 }
 
 Muon& Muon::operator+=(const Muon& rmuon) {
@@ -63,19 +63,28 @@ Muon& Muon::operator+=(const Muon& rmuon) {
    double eta_tot = -log(tan(theta/2));
    double phi_tot = atan2(py_tot,px_tot);
 
-   this->pt = pt_tot;
-   this->eta = eta_tot;
-   this->phi = phi_tot;
-   this->en = rmuon.en+en;
+   this->pt_  = pt_tot;
+   this->eta_ = eta_tot;
+   this->phi_ = phi_tot;
+   this->en_  = rmuon.en()+en();
    return *this;
 }
 
-bool Muon::isEqual(const Muon& m1, const Muon& m2) {
-   if (m1.pt == m2.pt && m1.eta == m2.eta && m1.phi == m2.phi && m1.en == m2.en)
-       return true;
-   else return false;
+bool Muon::operator==(const Muon& m) {
+   return ((this->pt_ == m.pt()) && (this->eta_ == m.eta()) && (this->phi_ == m.phi()) && (this->en_ == m.en()));
 }
 
+
+Muon operator+(const Muon& m1, const Muon& m2) {
+    Muon temp{m1}; //using copy constructor
+    temp+=m2;
+    return temp;
+}
+
+bool operator==(const Muon& m1, const Muon& m2) {
+    Muon temp{m1}; //using copy constructor
+    return (temp==m2);
+}
 
 //EVENTCANDIDATE
 bool EventCandidate::isGoodEvent() {
@@ -102,7 +111,7 @@ EventCandidate EventCandidate::analyseRow(std::vector<std::string> row) {
         muen  = std::stod(row.at(i+3));
 
         Muon mu(mupt, mueta, muphi, muen);
-        incandidate += mu; //operator += overloaded in class Muon sums up the muon momenta and energies
+        incandidate = incandidate + mu; //operator += overloaded in class Muon sums up the muon momenta and energies
     }
     //File-specific!! //take event info from row
     Event inevt(std::stod(row.at(0)),  std::stod(row.at(1)), std::stod(row.at(2)));

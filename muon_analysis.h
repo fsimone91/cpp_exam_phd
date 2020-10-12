@@ -22,29 +22,45 @@ public:
     Muon(){};
 
     Muon(double inpt, double ineta, double inphi, double inen)
-        : pt(inpt), eta(ineta), phi(inphi), en(inen)
+        : pt_(inpt), eta_(ineta), phi_(inphi), en_(inen)
     {}
 
+    Muon(const Muon & m){
+        pt_  = m.pt_;
+        eta_ = m.eta_;
+        phi_ = m.phi_;
+        en_  = m.en_;
+    }
+
+    double pt()  const { return pt_; }
+    double eta() const { return eta_; }
+    double phi() const { return phi_; }
+    double en()  const { return en_; }
     double mass();
-    double px() const { return (pt * cos(phi )); }
-    double py() const { return (pt * sin(phi )); }
-    double pz() const { return (pt * sinh(eta)); }
+    double px() const { return (pt_ * cos(phi_ )); }
+    double py() const { return (pt_ * sin(phi_ )); }
+    double pz() const { return (pt_ * sinh(eta_)); }
     void print();
 
     // Overload += operator to sum up tracks.
     Muon& operator+=(const Muon& rmuon);
 
-    //helper function to support class Muon
-    bool isEqual(const Muon&, const Muon&);
+    // Overload == operator to compare
+    bool operator==(const Muon& m);
 
 private:
-    double pt {0};
-    double eta{0};
-    double phi{0};
-    double en {0};
+    double pt_ {0};
+    double eta_{0};
+    double phi_{0};
+    double en_ {0};
 
 };
 
+//Sum of muons implemented as helper function
+Muon operator+(const Muon& m1, const Muon& m2);
+
+//Comparison between muons implemented as helper function
+bool operator==(const Muon& m1, const Muon& m2);
 
 class Event
 {
@@ -52,16 +68,19 @@ public:
     Event(){};
 
     Event(int inevt, int inlumi, int inrun)
-        : evt(inevt), lumi(inlumi), run(inrun)
+        : evt_(inevt), lumi_(inlumi), run_(inrun)
     {}
 
+    int evt()  const { return evt_; }
+    int lumi() const { return lumi_; }
+    int run()  const { return run_; }
     // Overload == operator to compare events
     //bool operator==(const Event);
 
 private:
-    int evt {0};
-    int lumi{0};
-    int run {0};
+    int evt_ {0};
+    int lumi_{0};
+    int run_ {0};
 };
 
 //constant declaration and initialization outside class
